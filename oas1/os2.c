@@ -1,3 +1,17 @@
+/*rollno=44   name=anurag   Q.1=Sudesh Sharma is a Linux expert who wants to have an online system where he can handle student queries.
+Since there 
+can be multiple requests at any time he wishes to dedicate a fixed amount of time to every request so that everyone 
+gets a fair share of his time.
+ He will log into the system from 10am to 12am only. He wants to have separate requests 
+queues for students and faculty, where faculty quese is given a higher priority.
+ Implement a strategy for the same. 
+
+The summary at the end of the session should include the total time he spent on handling queries and average
+query time.
+*/
+
+
+
 #include<stdio.h>
 
 #include<string.h>
@@ -308,7 +322,9 @@ int main()
    printf("\nEnter your quere time needed: ");
     
         scanf("%d",&burst_time);
-struct que *temp;
+
+         
+   struct que *temp;
 
        
      if(strcmp(position,"student")==0||strcmp(position,"STUDENT")==0)
@@ -324,3 +340,184 @@ struct que *temp;
       
       else if(strcmp(position,"teacher")==0||strcmp(position,"TEACHER")==0)
       
+
+      {
+                temp=&tech_que[tech_size];
+                
+//printf("yoo\n");
+           
+     tech_size++;
+             
+   temp->priority=1;
+            }
+
+     
+       temp->ar_time=arival_time;
+        
+    temp->bt_time=burst_time;
+         
+   temp->r_time=burst_time;
+      
+      strcpy(temp->person_name,name);
+       
+     temp->turn=1;
+
+       
+     Total_quere_time+=burst_time;
+   
+         Quere_count++;
+
+
+       
+     printf("\n\nAdd another form(Y/N)\n");
+      
+      char ch;
+            scanf("%c",&ch);
+         
+   scanf("%c",&ch);
+         
+   if(ch=='y'||ch=='Y')
+            flag1=1;
+      
+      else
+            flag1=0; 
+           
+                     
+
+        }
+        system("clear");
+
+        
+//printing of quere table 
+        printf("List Of the Student Quere Submitted\n\n");
+   
+     print_data(stud_que,stud_size);
+     
+   printf("\n\nList Of the Teacher Quere Submitted\n\n");
+    
+    print_data(tech_que,tech_size);
+     
+   //printf("%d\n",stud_size);
+       
+ //printf("%d\n",tech_size);
+      
+  
+        printf("NOTE:- Every Quere will be given 20 time Quantum:-\n");
+
+    
+    printf("\n\nWait till we call your name: \n\n ");
+
+     
+   pro_min_student();
+    
+    pro_min_teacher();
+      
+  sleep(6);
+
+     
+   if(min_av_student<min_av_teacher )
+      
+      {
+                timer=min_av_student;
+            }
+   
+         else
+            {
+                timer=min_av_teacher;
+            }
+    
+        
+        //calling quere according to there priority and arrival time
+    
+    while(tech_size!=0||stud_size!=0)
+    
+    {
+
+            //printf("%d %d \n",min_av_student,min_av_teacher);
+
+            
+
+        
+    if(timer>=min_av_teacher)
+         
+   {
+                pthread_create(&p1,NULL,pro,(void *)&tech_que[tech_loc]);
+        
+        pthread_join(p1,NULL);
+                //stud_size--;
+            }
+    
+        else 
+          
+  {
+                pthread_create(&p1,NULL,pro,(void *)&stud_que[stud_loc]);
+       
+         pthread_join(p1,NULL);
+               // tech_size--;
+
+            }
+
+            
+//print_data(stud_que,stud_size);
+            //print_data(tech_que,tech_size);
+   
+         //printf("%d\n",stud_size);
+            //printf("%d\n",tech_size);
+    
+        pro_min_student();
+            pro_min_teacher();
+
+  
+      }
+      
+  avg_quere_time=Total_quere_time/Quere_count;
+  
+      sleep(3);
+       
+ system("clear");
+     
+   printf("Todays quere taking session has been Ended \n");
+  
+      printf("\n\nTotal quere taken today = %d \n\nTotal quere time = %d\n\nAverage quere time = %f\n",Quere_count,Total_quere_time,avg_quere_time);
+       
+ sleep(3);
+     
+   system("clear");
+      
+  printf("Logging out .\n");
+      
+  sleep(2);
+        
+system("clear");
+       
+ printf("Logging out . .\n");
+   
+     sleep(2);
+      
+  system("clear");
+       
+ printf("Logging out . . .\n");
+   
+     sleep(2);
+       
+ system("clear");
+    
+    printf("Logged out\n");
+    
+    
+        
+    
+    }
+    else
+     
+   {
+            system("clear");
+     
+       printf("log In Unsucessfull\n\n");
+    
+  
+      printf("Cannt login during this time of day\n");
+
+        }
+
+}
