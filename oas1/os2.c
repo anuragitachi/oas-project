@@ -1,23 +1,12 @@
-/*rollno=44   name=anurag   Q.1=Sudesh Sharma is a Linux expert who wants to have an online system where he can handle student queries.
-Since there 
-can be multiple requests at any time he wishes to dedicate a fixed amount of time to every request so that everyone 
-gets a fair share of his time.
- He will log into the system from 10am to 12am only. He wants to have separate requests 
-queues for students and faculty, where faculty quese is given a higher priority.
- Implement a strategy for the same. 
-
-The summary at the end of the session should include the total time he spent on handling queries and average
-query time.
-*/
-
-
-
 #include<stdio.h>
 
 #include<string.h>
 
 #include<pthread.h>
 
+#include<stdlib.h>
+
+#include<time.h>
 
 
 int stud_size=0,tech_size=0;
@@ -28,11 +17,23 @@ int min_av_student=1000,stud_loc,min_turn=100;
 
 int min_av_teacher=1000,tech_loc;
 
+int quantom=20,size;
 
-//Burst_time
+int timer=0;
+
+struct tm * timeinfo;
+
+
+//structure for collection of all the details of the quere
+struct que
+
+{
+    int priority;     //to differentiate b/w student and teacher
+    int bt_time;    
+ //Burst_time
     int r_time;     
 //Remaining burst time
-    int ar_time;  
+    int ar_time;    
 //arrival time of quere
     char person_name[20]; 
   //Name of the counsumer
@@ -40,6 +41,43 @@ int min_av_teacher=1000,tech_loc;
   //repeation record
 };
 
+
+//stud_que array for student queres
+
+//tech_que array for teacher queres
+struct que stud_que[10],tech_que[10];
+
+
+//function to get the system current time
+void gettime()
+
+{
+    time_t rawtime;
+
+   
+ time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+
+}
+
+
+//function to check for the valid time to be loggeg in 1 for ture else 0
+void check_time()
+
+{
+    gettime();
+   
+ if(timeinfo->tm_hour>=10 && timeinfo->tm_hour<12)
+   
+ {
+        check=1;
+    }
+}
+
+
+
+//function will print all the detailes of the queres
+void print_data(struct que a[],int size)
 
 {
     printf("sr_no.\tName\t\tPosition\tArrival_time\tRemaining_Burst_time\tturn\n");
@@ -164,136 +202,109 @@ void remove_element(struct que * temp)
 }
 
 
-/printing of quere table 
-        printf("List Of the Student Quere Submitted\n\n");
-   
-     print_data(stud_que,stud_size);
-     
-   printf("\n\nList Of the Teacher Quere Submitted\n\n");
-    
-    print_data(tech_que,tech_size);
-     
-   //printf("%d\n",stud_size);
-       
- //printf("%d\n",tech_size);
-      
+
+//function will execute the que and update the que status
+void *pro(struct que *temp)
+
+{
+    system("clear");
+ 
+   printf("\" %s \" your turn is here \n",temp->person_name);  
   
-        printf("NOTE:- Every Quere will be given 20 time Quantum:-\n");
-
     
-    printf("\n\nWait till we call your name: \n\n ");
-
-     
-   pro_min_student();
-    
-    pro_min_teacher();
-      
-  sleep(6);
-
-     
-   if(min_av_student<min_av_teacher )
-      
-      {
-                timer=min_av_student;
-            }
+    sleep(4);
+    printf("\n\nProcessing your request\n\n");
+ 
+   sleep(4);
+    if ((temp->bt_time > 0))  
    
-         else
-            {
-                timer=min_av_teacher;
-            }
-    
-        
-        //calling quere according to there priority and arrival time
-    
-    while(tech_size!=0||stud_size!=0)
-    
-    {
-
-            //printf("%d %d \n",min_av_student,min_av_teacher);
-
-            
-
-        
-    if(timer>=min_av_teacher)
-         
-   {
-                pthread_create(&p1,NULL,pro,(void *)&tech_que[tech_loc]);
-        
-        pthread_join(p1,NULL);
-                //stud_size--;
-            }
-    
-        else 
-          
-  {
-                pthread_create(&p1,NULL,pro,(void *)&stud_que[stud_loc]);
-       
-         pthread_join(p1,NULL);
-               // tech_size--;
-
-            }
-
-            
-//print_data(stud_que,stud_size);
-            //print_data(tech_que,tech_size);
-   
-         //printf("%d\n",stud_size);
-            //printf("%d\n",tech_size);
-    
-        pro_min_student();
-            pro_min_teacher();
-
-  
-      }
-      
-  avg_quere_time=Total_quere_time/Quere_count;
-  
-      sleep(3);
-       
- system("clear");
-     
-   printf("Todays quere taking session has been Ended \n");
-  
-      printf("\n\nTotal quere taken today = %d \n\nTotal quere time = %d\n\nAverage quere time = %f\n",Quere_count,Total_quere_time,avg_quere_time);
-       
- sleep(3);
-     
-   system("clear");
-      
-  printf("Logging out .\n");
-      
-  sleep(2);
-        
-system("clear");
-       
- printf("Logging out . .\n");
-   
-     sleep(2);
-      
-  system("clear");
-       
- printf("Logging out . . .\n");
-   
-     sleep(2);
-       
- system("clear");
-    
-    printf("Logged out\n");
-    
-    
-        
-    
-    }
-    else
+ {
+        temp->bt_time -= quantom;
+        if (temp->bt_time <=0) 
      
    {
-            system("clear");
-     
-       printf("log In Unsucessfull\n\n");
-    
+            timer+=temp->bt_time+quantom;
   
-      printf("Cannt login during this time of day\n");
-
+          temp->bt_time=0;
+           
+ printf("\" %s \" quere is completly executed :\n",temp->person_name);
+       
+     remove_element(temp);
+           
+ //size--;
         }
+        else
+      
+  {
+            timer+=quantom;
+       
+     //printf("%d",temp->bt_time);
+  
+          printf("\nSorry for the inconvinance \n");
+  
+          printf("\" %s \" quere is to big you Wait for Your next turn\n",temp->person_name);
+            temp->turn++;
+        
+        }
+        sleep(5);
+        
+       
+    }
+     pthread_exit(NULL);
+}
 
-}  
+//main function 
+int main()
+{
+    pthread_t p1;
+
+    int Total_quere_time=0,Quere_count=0;
+    float avg_quere_time=0;
+    //check_time();
+    check=1;
+    system("clear");
+    printf("Suresh Welcome To Online Quere System:\n");
+    sleep(3);
+    system("clear");
+    printf("Logging in .\n");
+    sleep(2);
+    system("clear");
+    printf("Logging in . .\n");
+    sleep(2);
+    system("clear");
+    printf("Logging in . . .\n");
+        
+
+    // check the loggin in critaria    
+    if(check==1)
+    {
+        int flag1=1;
+        sleep(2);
+        system("clear");
+        printf("Logged In Succesfull\n");
+        while(flag1)
+        {
+            char name[20],position[20];
+            int arival_time,burst_time;
+            sleep(1);
+            system("clear");
+            //taking quere from the user
+            printf("Welcome to Quere Solutions\n");       
+   
+         printf("\nEnter the  quere details in the form:\n");
+      
+      printf("\nEnter your name: ");
+          
+  scanf("%s",name);
+         
+   printf("\nEnter your position(student/teacher): ");
+     
+       scanf("%s",position);
+           
+ printf("\nEnter your arrival time: ");
+     
+       scanf("%d",&arival_time);
+         
+   printf("\nEnter your quere time needed: ");
+    
+        scanf("%d",&burst_time);
