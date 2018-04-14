@@ -308,3 +308,19 @@ int main()
    printf("\nEnter your quere time needed: ");
     
         scanf("%d",&burst_time);
+struct que *temp;
+
+       
+     if(strcmp(position,"student")==0||strcmp(position,"STUDENT")==0)
+      
+      {
+                temp=&stud_que[stud_size];
+          
+      //printf("helo\n");
+             
+   stud_size++;
+                temp->priority=2;
+            }
+      
+      else if(strcmp(position,"teacher")==0||strcmp(position,"TEACHER")==0)
+      
