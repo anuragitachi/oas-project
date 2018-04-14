@@ -2,7 +2,7 @@
 Since there 
 can be multiple requests at any time he wishes to dedicate a fixed amount of time to every request so that everyone 
 gets a fair share of his time.
- He will log into the system from 10am to 12am only. He wants to have separate requests 
+  He will log into the system from 10am to 12am only. He wants to have separate requests 
 queues for students and faculty, where faculty quese is given a higher priority.
  Implement a strategy for the same. 
 
